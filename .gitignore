@@ -16,3 +16,4 @@ jsconfig.json
 public/javascripts/browserified.js
 
 .vscode/settings.json
+/.project

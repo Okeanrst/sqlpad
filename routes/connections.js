@@ -5,6 +5,7 @@ var decipher = require('../lib/decipher.js')
 var Connection = require('../models/Connection.js')
 var mustBeAdmin = require('../middleware/must-be-admin.js')
 var mustBeAuthenticated = require('../middleware/must-be-authenticated.js')
+var User = require('../models/User.js')
 
 function connectionFromBody (body) {
   return {
@@ -25,7 +26,7 @@ function connectionFromBody (body) {
 }
 
 router.get('/api/connections', mustBeAuthenticated, function (req, res) {
-  Connection.findAll(function (err, connections) {
+  function handleConnections(err, connections) {
     if (err) {
       console.error(err)
       return res.json({
@@ -40,7 +41,25 @@ router.get('/api/connections', mustBeAuthenticated, function (req, res) {
     res.json({
       connections: connections
     })
-  })
+  }
+  if (req.user.role === 'admin') {
+    Connection.findAll(handleConnections)
+  } else {
+    User.findOneById(req.user.id, function (err, user) {
+      if (err) {
+        console.error(err)
+        return res.json({error: 'Problem querying user database'})
+      }
+      if (!user) return res.json({error: 'user not found'})
+      Connection.findOneById(user.connection, (err, connection) => {
+        connections = []
+        if (connection) {
+          connections.push(connection)
+        }
+        handleConnections(err, connections)
+      })
+    })
+  }
 })
 
 router.get('/api/connections/:_id', mustBeAuthenticated, function (req, res) {

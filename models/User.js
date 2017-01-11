@@ -12,7 +12,8 @@ var schema = {
   password: Joi.string().optional().strip(),
   createdDate: Joi.date().default(new Date(), 'time of creation'),
   modifiedDate: Joi.date().default(new Date(), 'time of modification'),
-  signupDate: Joi.date().optional()
+  signupDate: Joi.date().optional(),
+  connection: Joi.string().optional()
 }
 
 var User = function User (data) {
@@ -25,6 +26,7 @@ var User = function User (data) {
   this.createdDate = data.createdDate
   this.modifiedDate = data.modifiedDate
   this.signupDate = data.signupDate
+  this.connection = data.connection || 'default'
 }
 
 User.prototype.save = function UserSave (callback) {

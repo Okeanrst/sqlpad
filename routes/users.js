@@ -51,7 +51,8 @@ router.post('/api/users', mustBeAdmin, function (req, res) {
     }
     var newUser = new User({
       email: req.body.email,
-      role: req.body.role
+      role: req.body.role,
+      connection: req.body.connection
     })
     newUser.save(function (err, user) {
       if (err) {
@@ -92,7 +93,7 @@ router.post('/api/users', mustBeAdmin, function (req, res) {
           }
         })
       }
-      return res.json({})
+      return res.json(user)
     })
   })
 })
